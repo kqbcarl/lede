@@ -4948,10 +4948,10 @@ jobs:
           CONFIG_PACKAGE_luci-app-ddns=y
           # CONFIG_PACKAGE_luci-app-design-config is not set
           # CONFIG_PACKAGE_luci-app-diag-core is not set
-          # CONFIG_PACKAGE_luci-app-diskman is not set
-          # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs is not set
-          # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk is not set
-          # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_mdadm is not set
+          CONFIG_PACKAGE_luci-app-diskman=y
+          CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs=y
+          CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk=y
+          CONFIG_PACKAGE_luci-app-diskman_INCLUDE_mdadm=y
           # CONFIG_PACKAGE_luci-app-dnscrypt-proxy is not set
           # CONFIG_PACKAGE_luci-app-dnsforwarder is not set
           # CONFIG_PACKAGE_luci-app-docker is not set
@@ -6700,7 +6700,7 @@ jobs:
           # CONFIG_PACKAGE_lsblk is not set
           # CONFIG_PACKAGE_lvm2 is not set
           # CONFIG_PACKAGE_lvm2-selinux is not set
-          # CONFIG_PACKAGE_mdadm is not set
+          CONFIG_PACKAGE_mdadm=y
           # CONFIG_PACKAGE_mtools is not set
           # CONFIG_PACKAGE_parted is not set
           # CONFIG_PACKAGE_partx-utils is not set
