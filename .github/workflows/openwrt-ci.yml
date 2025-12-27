@@ -1,29 +1,32 @@
-# 
-# <https://github.com/KFERMercer/OpenWrt-CI>
-#
-# Copyright (C) 2019 P3TERX
-#
-# Copyright (C) 2020 KFERMercer
-#
 name: OpenWrt-CI
 
 on:
+  push:
+    branches: 
+      - master
   schedule:
-    - cron: 0 20 * * *
-
-permissions:
-  contents: read
+    - cron: 30 22 5 * *
+  release:
+    types: [published]
 
 jobs:
 
   build_openwrt:
 
-    name: Build OpenWrt Firmware
+    name: Build OpenWrt firmware
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu22.04
+
+    if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-      - name: Space cleanup and Initialization environment
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Space cleanup
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -39,69 +42,14 @@ jobs:
           sudo -E apt clean
           sudo -E timedatectl set-timezone "Asia/Shanghai"
 
-      - name: Checkout OpenWrt
-        uses: actions/checkout@v4
 
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: true
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true
 
-      - name: Update feeds
-        run: |
-          sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
 
-      - name: Generate configuration file
-        run: make defconfig
 
-      - name: Download packages
-        run: make download -j16
 
-      - name: Compile firmware
-        run: |
-          make -j$(nproc) || make -j1 V=s
-          echo "======================="
-          echo "Space usage:"
-          echo "======================="
-          df -h
-          echo "======================="
-          du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
-          du -h --max-depth=1 ./build_dir
-          du -h --max-depth=1 ./bin
 
-      - name: Prepare artifact
-        run: |
-          mkdir -p ./artifact/package
-          mkdir -p ./artifact/buildinfo
-          rm -rf $(find ./bin/targets/ -type d -name "packages")
-          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
-          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
-      - name: Upload buildinfo
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenWrt_buildinfo
-          path: ./artifact/buildinfo/
 
-      - name: Upload package
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenWrt_package
-          path: ./artifact/package/
 
-      - name: Upload firmware
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenWrt_firmware
-          path: ./bin/targets/
+
+
